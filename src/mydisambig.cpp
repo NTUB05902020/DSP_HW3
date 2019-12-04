@@ -31,17 +31,28 @@ struct String{
         str.insert(str.end(), a.str.begin(), a.str.end());
         str.insert(str.end(), b.str.begin(), b.str.end());
     }
+
     String(File &file, const bool add=false){
         char *buf;  buf = file.getline();
-        if(add) str.push_back(Word("<s>"));
-        
-        Word tmp;  int res;
-        while((res = sscanf(buf, "%s", tmp.w)) > 0){
-            buf = &buf[res];
-            str.push_back(tmp);
-        }
-        if(add) str.push_back(Word("</s>"));
-    }
+		if(buf == NULL){ str.clear();}
+		else{
+        	if(add) str.push_back(Word("<s>"));
+			
+			int index = 0, wordlen = 0;  Word tmp;
+        	while(buf[index] != '\0'){
+				if(buf[index] == ' '){
+					if(wordlen > 0){
+						tmp.w[wordlen] = '\0';
+						str.push_back(tmp);
+						wordlen = 0;
+					}
+				}else tmp.w[wordlen++] = buf[index];
+				++index;
+			}
+			
+	        if(add) str.push_back(Word("</s>"));
+    	}
+	}
     
     void print(const char *end="\n") const{
         for(int i=0;i<str.size();++i) str[i].print();
@@ -59,15 +70,43 @@ struct String{
     }
 };
 
+namespace std{
+	template<> struct less<String>{
+		bool operator() (const String &l, const String &r) const{
+			return (String::compare(l, r) < 0);
+		}
+	};
+	template<> struct less<Word>{
+		bool operator() (const Word &l, const Word &r) const{
+			return (Word::compare(l, r) < 0);
+		}
+	};
+}
+
+std::map<Word, std::vector<String>> ZhuYin_Big5_map;
+
+void getMap(const char *map_path, const int map_order){
+	File mapfile(map_path, "r");
+	int cnt = 0;
+	while(1){
+		String line(mapfile);
+		if(line.str.empty()) break;
+		++cnt;
+		vector<String> vec(line.str.begin()+1, line.str.end());
+		ZhuYin_Big5_map.insert(std::pair<Word,std::vector<String>>(line.str[0], vec));
+	}
+	printf("map count = %d\n", cnt);
+}
+
 int main(int argc, char **argv){
-	int order = 2;
-	if(argc == 6){
-		order = atoi(argv[5]);
-	}else if(argc != 5){
+	if(argc != 5){
 		printf("Format: %s [file_in] [mapping] [lm] [file_out]\n", argv[0]);
-		printf("    or: %s [file_in] [mapping] [lm] [file_out] [order]\n", argv[0]);
 		exit(1);
 	}
+
+	const int order = 2;
+
+	getMap(argv[2], order);
     
     File textfile(argv[1], "r");
 	
