@@ -99,7 +99,7 @@ void getMap(const char *map_path, const int map_order){
 	}
 }
 
-float getLogProb(const Word &pre, const String &post, Vocab &voc, Ngram &lm){
+float getLogProb(const Word &pre, const Word &post, Vocab &voc, Ngram &lm){
     VocabIndex context[3] = {voc.getIndex(post.w), voc.getIndex(pre.w), Vocab_None};
     if(context[0] == Vocab_None){ context[0] = voc.getIndex("<unk>");}
     if(context[1] == Vocab_None){ context[1] = voc.getIndex("<unk>");}
