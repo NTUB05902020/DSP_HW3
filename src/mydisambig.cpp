@@ -30,7 +30,7 @@ struct String{
     String(){ str.clear();}
     String(const Word &a){ str.push_back(a);}
     String(const Word &a, const Word &b){ str.push_back(a); str.push_back(b);}
-    String(const String &s, const Word &w){
+    String(const String &s, const Word &word){
         str.insert(str.end(), s.str.begin(), s.str.end());
         str.push_back(word);
     }
@@ -103,7 +103,7 @@ float getLogProb(const Word &pre, const Word &post, Vocab &voc, Ngram &lm){
 }
 
 String viterbi(const String &s, Vocab &voc, Ngram &lm){
-    std::vector<std::pair<String,float>> vecs[2];  int len = s.size();
+    std::vector<std::pair<String,float>> vecs[2];  int len = s.str.size();
     float startProb = getLogProb(s.str[0], voc, lm); //logProb of <s>
     vecs[0].push_back(std::pair<String,float>(String(s.str[0]), startProb));
     
@@ -137,7 +137,7 @@ String viterbi(const String &s, Vocab &voc, Ngram &lm){
             max_index = j;
         }
     }
-    return vecs[v_][j].first;
+    return vecs[v_][max_index].first;
 }
 
 int main(int argc, char **argv){
