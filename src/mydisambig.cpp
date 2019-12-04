@@ -33,7 +33,7 @@ struct String{
         str.insert(str.end(), a.str.begin(), a.str.end());
         str.insert(str.end(), b.str.begin(), b.str.end());
     }
-
+    
     String(File &file, const bool add=false){
         char *buf;  buf = file.getline();
 		if(buf == NULL){ str.clear();}
@@ -60,7 +60,7 @@ struct String{
         for(int i=0;i<str.size();++i) str[i].print();
         printf("%s", end);
     }
-    static int compare(const String &s1, const String &s2){
+    /*static int compare(const String &s1, const String &s2){
         unsigned int minlen = (s1.str.size() < s2.str.size())? s1.str.size() : s2.str.size();
         for(unsigned int i=0;i<minlen;++i){
             int res = Word::compare(s1.str[i], s2.str[i]);
@@ -69,15 +69,15 @@ struct String{
         if(minlen == s1.str.size())
             return (minlen == s2.str.size())? 0 : -1;
         else return 1;
-    }
+    }*/
 };
 
 namespace std{
-	template<> struct less<String>{
+	/*template<> struct less<String>{
 		bool operator() (const String &l, const String &r) const{
 			return (String::compare(l, r) < 0);
 		}
-	};
+	};*/
 	template<> struct less<Word>{
 		bool operator() (const Word &l, const Word &r) const{
 			return (Word::compare(l, r) < 0);
@@ -85,7 +85,7 @@ namespace std{
 	};
 }
 
-std::map<Word, std::vector<String>> ZhuYin_Big5_map;
+std::map<Word, std::vector<Word>> ZhuYin_Big5_map;
 
 void getMap(const char *map_path, const int map_order){
 	File mapfile(map_path, "r");
@@ -94,17 +94,48 @@ void getMap(const char *map_path, const int map_order){
 		String line(mapfile);
 		if(line.str.empty()) break;
 		++cnt;
-		vector<String> vec(line.str.begin()+1, line.str.end());
-		ZhuYin_Big5_map.insert(std::pair<Word,std::vector<String>>(line.str[0], vec));
+		vector<Word> vec(line.str.begin()+1, line.str.end());
+		ZhuYin_Big5_map.insert(std::pair<Word,std::vector<Word>>(line.str[0], vec));
 	}
+    printf("map length = %d\n", cnt);
+}
+
+VocabIndex myGetIndex(const Word &word, Vocab &voc){
+    VocabIndex ret = voc.getIndex(word.w);
+    return (ret != Vocab_None)? ret : voc.getIndex("<unk>");
+}
+
+float getLogProb(const Word &word, Vocab &voc, Ngram &lm){
+    VocabIndex context[2] = {voc.myGetIndex(word), Vocab_None};
+    return lm.wordProb(context[0], &context[1]);
 }
 
 float getLogProb(const Word &pre, const Word &post, Vocab &voc, Ngram &lm){
-    VocabIndex context[3] = {voc.getIndex(post.w), voc.getIndex(pre.w), Vocab_None};
-    if(context[0] == Vocab_None){ context[0] = voc.getIndex("<unk>");}
-    if(context[1] == Vocab_None){ context[1] = voc.getIndex("<unk>");}
+    VocabIndex context[3] = {voc.myGetIndex(post.w), voc.myGetIndex(pre.w), Vocab_None};
     return lm.wordProb(context[0], &context[1]);
 }
+
+/*String viterbi(const String &s, Vocab &voc, Ngram &lm){
+    std::vector<std::pair<String,float>> vecs[2];  int len = s.size();
+    float startProb = getLogProb(s.str[0], voc, lm); //logProb of <s>
+    vecs[0].push_back(std::pair<String,float>(String(s.str[0]), startProb));
+    
+    for(int i=1;i<len;++i){
+        int v = i&1;  vecs[v].clear();
+        std::map<Word, std::vector<String>>::iterator it = ZhuYin_Big5_map.find(s.str[i]);
+        if(it == ZhuYin_Big5_map.end()){ //unknown word in map
+            
+            
+            
+            
+        }
+        
+        
+        
+        
+    }
+    
+}*/
 
 int main(int argc, char **argv){
 	if(argc != 5){
