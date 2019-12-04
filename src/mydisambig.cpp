@@ -127,8 +127,8 @@ int main(int argc, char **argv){
 		s.print();
         
         if(i == 4){
-            printf("log Prob(");  s.str[1].w.print("|");
-            s.str[0].print(")");  printf(" = %f\n", getLogProb(s.str[0].w, s.str[1].w, voc, lm));    
+            printf("log Prob(");  s.str[1].w.print();  printf("|");
+            s.str[0].print();  printf(") = %f\n", getLogProb(s.str[0].w, s.str[1].w, voc, lm));    
         }
     }
 	infile.close();  outfile.close();
