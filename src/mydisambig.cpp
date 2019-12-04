@@ -19,6 +19,7 @@ struct Word{
     Word(){};
     Word(const char *s){ strcpy(w, s);}
     void print() const{ printf("%s", w);}
+	void print(FILE *fp) const{ fprintf(fp, "%s", w);}
     static int compare(const Word &w1, const Word &w2){
         return strcmp(w1.w, w2.w);
     }
@@ -56,8 +57,9 @@ struct String{
 				}else tmp.w[wordlen++] = buf[index];
 				++index;
 			}
-			
-	        if(add) str.push_back(Word("</s>"));
+			if((add && str.size() == 1) || (!add && str.size() == 0)){
+				str.clear();
+			}else if(add) str.push_back(Word("</s>"));
     	}
 	}
     
@@ -65,6 +67,10 @@ struct String{
         for(int i=0;i<str.size();++i) str[i].print();
         printf("%s", end);
     }
+	void print(FILE *fp, const char *end="\n") const{
+		for(int i=0;i<str.size();++i) str[i].print(fp);
+		fprintf(fp, "%s", end);
+	}
 };
 
 namespace std{
@@ -102,11 +108,19 @@ float getLogProb(const Word &pre, const Word &post, Vocab &voc, Ngram &lm){
     return lm.wordProb(context[0], &context[1]);
 }
 
+/*void printViterbiStatus(const std::vector<std::pair<String,float>> vec, int iternum){
+	printf("Viterbi %3d:\n", iternum);
+	for(int i=0;i<vec.size();++i){
+		printf("    %f  ", vec[i].second); vec[i].first.print();
+	}
+}*/
+
 String viterbi(const String &s, Vocab &voc, Ngram &lm){
     std::vector<std::pair<String,float>> vecs[2];  int len = s.str.size();
-    float startProb = getLogProb(s.str[0], voc, lm); //logProb of <s>
-    vecs[0].push_back(std::pair<String,float>(String(s.str[0]), startProb));
+    vecs[0].push_back(std::pair<String,float>(String(s.str[0]), 0.));
     
+	//printViterbiStatus(vecs[0], 0);
+
     for(int i=1;i<len;++i){
         int v = i&1;  int v_ = 1-v;  vecs[v].clear();
         std::vector<Word> candidates;
@@ -127,6 +141,7 @@ String viterbi(const String &s, Vocab &voc, Ngram &lm){
             String maxstr(vecs[v_][max_index].first, candidate);
             vecs[v].push_back(std::pair<String,float>(maxstr, max));
         }
+		//printViterbiStatus(vecs[v], i);
     }
     
     int v_ = (1-len&1), prenum = vecs[v_].size(), max_index = 0;
@@ -154,18 +169,20 @@ int main(int argc, char **argv){
 	getMap(argv[2], order);
     
     //parse file_in
-    File infile(argv[1], "r"), outfile(argv[4], "w");
-	for(int i=0;i<5;++i){
+    File infile(argv[1], "r");
+	FILE *outfile = fopen(argv[4], "w");
+	if(outfile == NULL){
+		printf("Failed to open %s\n", argv[4]);
+		exit(1);
+	}
+	while(1){
 		String s(infile, true);
-		s.print();
-        
+		if(s.str.size() == 0) break;
+		//s.print(outfile);
         String news = viterbi(s, voc, lm);
-        news.print("\n\n");
-        /*if(i == 4){
-            printf("log Prob(");  s.str[1].print();  printf("|");
-            s.str[0].print();  printf(") = %f\n", getLogProb(s.str[0].w, s.str[1].w, voc, lm));
-        }*/
+        news.print(outfile);
+		fflush(outfile);
     }
-	infile.close();  outfile.close();
+	infile.close();  fclose(outfile);
 	exit(0);
 }
