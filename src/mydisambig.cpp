@@ -99,7 +99,7 @@ void getMap(const char *map_path, const int map_order){
 	}
 }
 
-float getLogProb(const Word &word, const String &s, Vocab &voc, const Ngram &lm){
+float getLogProb(const Word &word, const String &s, Vocab &voc, Ngram &lm){
     VocabIndex context[4];  unsigned int len = s.str.size();
     if(len > order){
         printf("Language Model only have order %d, so can't get probability of ", order);
