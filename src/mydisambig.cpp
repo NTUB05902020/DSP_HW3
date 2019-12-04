@@ -39,24 +39,20 @@ struct String{
 		if(buf == NULL){ str.clear();}
 		else{
         	if(add) str.push_back(Word("<s>"));
-            printf("<s> ");
 			
 			int index = 0, wordlen = 0;  Word tmp;
         	while(1){
-				if(buf[index] == ' ' || buf[index] == '\0'){
+				if(buf[index] == ' ' || buf[index] == '\0' || buf[index] == '\n'){
 					if(wordlen > 0){
 						tmp.w[wordlen] = '\0';
-						str.push_back(tmp);
-                        tmp.print(); printf(" ");
-						wordlen = 0;
+						str.push_back(tmp); wordlen = 0;
 					}
-                    if(buf[index] == '\0') break;
+                    if(buf[index] == '\0' || buf[index] == '\n') break;
 				}else tmp.w[wordlen++] = buf[index];
 				++index;
 			}
 			
 	        if(add) str.push_back(Word("</s>"));
-            printf("</s>\n");
     	}
 	}
     
@@ -127,7 +123,7 @@ int main(int argc, char **argv){
     File infile(argv[1], "r"), outfile(argv[4], "w");
 	for(int i=0;i<5;++i){
 		String s(infile, true);
-		//s.print();
+		s.print();
         
         if(i == 4){
             printf("log Prob(");  s.str[1].print();  printf("|");
