@@ -87,9 +87,9 @@ void getMap(const char *map_path, const int map_order){
     for(int i=0;i<5;++i,++it){
         it->first.print();  printf(":  ");
         printf("%u\n", it->second.size());
-        /*for(int j=0;j<(it->second.size());++j){
+        for(int j=0;j<10;++j){
             it->second[j].print();  printf(" ");
-        }*/
+        }
         printf("\n");
     }
 }
