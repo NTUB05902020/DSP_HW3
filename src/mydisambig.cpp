@@ -11,7 +11,7 @@
 
 #define STRING_LEN_MAX 1024
 
-int order = 2;
+const int order = 2;
 
 struct Word{
     char w[6];
@@ -99,26 +99,12 @@ void getMap(const char *map_path, const int map_order){
 	}
 }
 
-float getLogProb(const Word &word, const String &s, Vocab &voc, Ngram &lm){
-    VocabIndex context[4];  unsigned int len = s.str.size();
-    if(len > order){
-        printf("Language Model only have order %d, so can't get probability of ", order);
-        s.print();  exit(1);
-    }
-    for(int i=len-1;i>=0;--i){
-        context[i] = voc.getIndex(s.str[i].w);
-        if(context[i] == Vocab_None){
-            printf("Error when getting probability of ");
-            s.print();  exit(1);
-        }
-    }
-    context[len] = Vocab_None;
-    VocabIndex wid = voc.getIndex(word.w);
-    if(wid == Vocab_None){
-        printf("Error when getting probability of ");
-        word.print();  printf("\n");
-    }
-    return lm.wordProb(wid, context);
+float getLogProb(const Word &pre, const String &post, Vocab &voc, Ngram &lm){
+    VocabIndex context[3] = {voc.getIndex(post.w), voc.getIndex(pre.w), Vocab_None};
+    if(context[0] == Vocab_None){ context[0] = voc.getIndex(Vocab_Unknow);}
+    if(context[1] == Vocab_None){ context[1] = voc.getIndex(Vocab_Unknow);}
+    printf("%d %d %d\n", context[0], context[1], context[2]);
+    return lm.wordProb(context[0], &context[1]);
 }
 
 int main(int argc, char **argv){
