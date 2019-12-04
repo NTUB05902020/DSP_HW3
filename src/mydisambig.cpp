@@ -23,10 +23,10 @@ struct Word{
 };
 
 struct String{
-    Vector<Word> str;
+    std::vector<Word> str;
     
-    String(){};
-    String(const Word &a){ str(a);}
+    String(){ str.clear();}
+    String(const Word &a){ str.clear(); str.push_back(a);}
     String(const String &a, const String &b){
         str.insert(str.end(), a.str.begin(), a.str.end());
         str.insert(str.end(), b.str.begin(), b.str.end());
@@ -43,21 +43,22 @@ struct String{
         if(add) str.push_back(Word("</s>"));
     }
     
-    void print(const char *end) const{
+    void print(const char *end="\n") const{
         for(int i=0;i<str.size();++i) str[i].print();
         printf("%s", end);
     }
     static int compare(const String &s1, const String &s2){
         unsigned int minlen = (s1.str.size() < s2.str.size())? s1.str.size() : s2.str.size();
         for(unsigned int i=0;i<minlen;++i){
-            int res = Word::compare(s1.str[i] < s2.str[i]);
+            int res = Word::compare(s1.str[i], s2.str[i]);
             if(res != 0) return res;
         }
         if(minlen == s1.str.size())
-            return (minlen == s2.str.siz())? 0 : -1;
+            return (minlen == s2.str.size())? 0 : -1;
         else return 1;
     }
-}
+};
+
 int main(int argc, char **argv){
 	int order = 2;
 	if(argc == 6){
@@ -71,12 +72,11 @@ int main(int argc, char **argv){
     File textfile(argv[1], "r");
 	
 	for(int i=0;i<5;++i){
-		MyString str(textfile, true);
+		String str(textfile, true);
 		str.print();
     }
 	
 	textfile.close();
 
-	getMap(argv[2]);
 	exit(0);
 }
