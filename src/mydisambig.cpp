@@ -101,8 +101,8 @@ void getMap(const char *map_path, const int map_order){
 
 float getLogProb(const Word &pre, const String &post, Vocab &voc, Ngram &lm){
     VocabIndex context[3] = {voc.getIndex(post.w), voc.getIndex(pre.w), Vocab_None};
-    if(context[0] == Vocab_None){ context[0] = voc.getIndex(Vocab_Unknow);}
-    if(context[1] == Vocab_None){ context[1] = voc.getIndex(Vocab_Unknow);}
+    if(context[0] == Vocab_None){ context[0] = voc.getIndex("<unk>");}
+    if(context[1] == Vocab_None){ context[1] = voc.getIndex("<unk>");}
     printf("%d %d %d\n", context[0], context[1], context[2]);
     return lm.wordProb(context[0], &context[1]);
 }
