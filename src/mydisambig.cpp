@@ -46,6 +46,7 @@ struct String{
 					if(wordlen > 0){
 						tmp.w[wordlen] = '\0';
 						str.push_back(tmp);
+                        tmp.print()
 						wordlen = 0;
 					}
                     if(buf[index] == '\0') break;
