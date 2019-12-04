@@ -86,6 +86,7 @@ void getMap(const char *map_path, const int map_order){
     auto it = ZhuYin_Big5_map.begin();
     for(int i=0;i<5;++i,++it){
         it->first.print();  printf(":  ");
+        printf("%u\n", it->second.size());
         /*for(int j=0;j<(it->second.size());++j){
             it->second[j].print();  printf(" ");
         }*/
