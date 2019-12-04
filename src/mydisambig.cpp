@@ -98,6 +98,12 @@ void getMap(const char *map_path, const int map_order){
 		ZhuYin_Big5_map.insert(std::pair<Word,std::vector<Word>>(line.str[0], vec));
 	}
     printf("map length = %d\n", cnt);
+    for(auto it=ZhuYin_Big5_map.begin();it!=ZhuYin_Big5_map.begin()+5;++it){
+        for(int j=0;j<it->size();++j){
+            it->print();  printf(" ");
+        }
+        printf("\n");
+    }
 }
 
 VocabIndex myGetIndex(const Word &word, Vocab &voc){
