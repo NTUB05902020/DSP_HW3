@@ -100,7 +100,7 @@ void getMap(const char *map_path, const int map_order){
     printf("map length = %d\n", cnt);
     for(auto it=ZhuYin_Big5_map.begin();it!=ZhuYin_Big5_map.begin()+5;++it){
         it->first.print();  printf(":  ");
-        for(int j=0;j<it->size();++j){
+        for(int j=0;j<it->second.size();++j){
             it->second.print();  printf(" ");
         }
         printf("\n");
