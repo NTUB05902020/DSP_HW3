@@ -28,7 +28,12 @@ struct String{
     std::vector<Word> str;
     
     String(){ str.clear();}
-    String(const Word &a){ str.clear(); str.push_back(a);}
+    String(const Word &a){ str.push_back(a);}
+    String(const Word &a, const Word &b){ str.push_back(a); str.push_back(b);}
+    String(const String &s, const Word &w){
+        str.insert(str.end(), s.str.begin(), s.str.end());
+        str.push_back(word);
+    }
     String(const String &a, const String &b){
         str.insert(str.end(), a.str.begin(), a.str.end());
         str.insert(str.end(), b.str.begin(), b.str.end());
@@ -97,27 +102,43 @@ float getLogProb(const Word &pre, const Word &post, Vocab &voc, Ngram &lm){
     return lm.wordProb(context[0], &context[1]);
 }
 
-/*String viterbi(const String &s, Vocab &voc, Ngram &lm){
+String viterbi(const String &s, Vocab &voc, Ngram &lm){
     std::vector<std::pair<String,float>> vecs[2];  int len = s.size();
     float startProb = getLogProb(s.str[0], voc, lm); //logProb of <s>
     vecs[0].push_back(std::pair<String,float>(String(s.str[0]), startProb));
     
     for(int i=1;i<len;++i){
-        int v = i&1;  vecs[v].clear();
-        std::map<Word, std::vector<String>>::iterator it = ZhuYin_Big5_map.find(s.str[i]);
-        if(it == ZhuYin_Big5_map.end()){ //unknown word in map
-            
-            
-            
-            
+        int v = i&1;  int v_ = 1-v;  vecs[v].clear();
+        std::vector<Word> candidates;
+        
+        auto it = ZhuYin_Big5_map.find(s.str[i]);
+        if(it == ZhuYin_Big5_map.end()) candidates.push_back(s.str[i]);  //unknown word in map
+        else candidates = it->second;
+        
+        for(auto &candidate : candidates){
+            Word lastword = vecs[v_][0].first.str.back();
+            float max = vecs[v_][0].second + getLogProb(lastword, candidate, voc, lm);
+            int max_index = 0, prenum = vecs[v_].size();
+            for(int j=1;j<prenum;++j){
+                lastword = vecs[v_][j].first.str.back();
+                float newLogProb = vecs[v_][j].second + getLogProb(lastword, candidate, voc, lm);
+                if(newLogProb > max){ max = newLogProb; max_index = j;}
+            }
+            String maxstr(vecs[v_][max_index].first, candidate);
+            vecs[v].push_back(std::pair<String,float>(maxstr, newLogProb));
         }
-        
-        
-        
-        
     }
     
-}*/
+    int v_ = (1-len&1), prenum = vecs[v_].size(), max_index = 0;
+    float maxProb = vecs[v_][0].second;
+    for(int j=1;j<prenum;++j){
+        if(maxProb < vecs[v_][j].second){
+            maxProb = vecs[v_][j].second;
+            max_index = j;
+        }
+    }
+    return vecs[v_][j].first;
+}
 
 int main(int argc, char **argv){
 	if(argc != 5){
@@ -138,10 +159,12 @@ int main(int argc, char **argv){
 		String s(infile, true);
 		s.print();
         
-        if(i == 4){
+        String news = viterbi(s, voc, lm);
+        news.print("\n\n");
+        /*if(i == 4){
             printf("log Prob(");  s.str[1].print();  printf("|");
-            s.str[0].print();  printf(") = %f\n", getLogProb(s.str[0].w, s.str[1].w, voc, lm));    
-        }
+            s.str[0].print();  printf(") = %f\n", getLogProb(s.str[0].w, s.str[1].w, voc, lm));
+        }*/
     }
 	infile.close();  outfile.close();
 	exit(0);
