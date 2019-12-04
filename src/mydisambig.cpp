@@ -98,9 +98,10 @@ void getMap(const char *map_path, const int map_order){
 		ZhuYin_Big5_map.insert(std::pair<Word,std::vector<Word>>(line.str[0], vec));
 	}
     printf("map length = %d\n", cnt);
-    for(auto it=ZhuYin_Big5_map.begin();it!=ZhuYin_Big5_map.begin()+5;++it){
+    auto it = ZhuYin_Big5_map.begin();
+    for(int i=0;i<5;++i;++it){
         it->first.print();  printf(":  ");
-        for(int j=0;j<it->second.size();++j){
+        for(int j=0;j<(it->second.size());++j){
             it->second.print();  printf(" ");
         }
         printf("\n");
