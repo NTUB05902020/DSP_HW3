@@ -41,13 +41,14 @@ struct String{
         	if(add) str.push_back(Word("<s>"));
 			
 			int index = 0, wordlen = 0;  Word tmp;
-        	while(buf[index] != '\0'){
-				if(buf[index] == ' '){
+        	while(1){
+				if(buf[index] == ' ' || buf[index] == '\0'){
 					if(wordlen > 0){
 						tmp.w[wordlen] = '\0';
 						str.push_back(tmp);
 						wordlen = 0;
 					}
+                    if(buf[index] == '\0') break;
 				}else tmp.w[wordlen++] = buf[index];
 				++index;
 			}
