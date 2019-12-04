@@ -106,12 +106,12 @@ VocabIndex myGetIndex(const Word &word, Vocab &voc){
 }
 
 float getLogProb(const Word &word, Vocab &voc, Ngram &lm){
-    VocabIndex context[2] = {voc.myGetIndex(word), Vocab_None};
+    VocabIndex context[2] = {myGetIndex(word, voc), Vocab_None};
     return lm.wordProb(context[0], &context[1]);
 }
 
 float getLogProb(const Word &pre, const Word &post, Vocab &voc, Ngram &lm){
-    VocabIndex context[3] = {voc.myGetIndex(post.w), voc.myGetIndex(pre.w), Vocab_None};
+    VocabIndex context[3] = {myGetIndex(post.w, voc), myGetIndex(pre.w, voc), Vocab_None};
     return lm.wordProb(context[0], &context[1]);
 }
 
