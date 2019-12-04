@@ -11,6 +11,8 @@
 
 #define STRING_LEN_MAX 1024
 
+int order = 2;
+
 struct Word{
     char w[6];
     
@@ -97,7 +99,27 @@ void getMap(const char *map_path, const int map_order){
 	}
 }
 
-//float getLogProb(const String &s, 
+float getLogProb(const Word &word, const String &s, const Vocab &voc, const Ngram &lm){
+    VocabIndex context[4];  unsigned int len = s.str.size();
+    if(len > order){
+        printf("Language Model only have order %d, so can't get probability of ", order);
+        s.print();  exit(1);
+    }
+    for(int i=len-1;i>=0;--i){
+        context[i] = voc.getIndex(s.str[i].w);
+        if(context[i] == Vocab_None){
+            printf("Error when getting probability of ");
+            s.print();  exit(1);
+        }
+    }
+    context[len] = Vocab_None;
+    VocabIndex wid = voc.getIndex(word.w);
+    if(wid == Vocab_None){
+        printf("Error when getting probability of ");
+        word.print();  printf("\n");
+    }
+    return lm.wordProb(wid, context);
+}
 
 int main(int argc, char **argv){
 	if(argc != 5){
@@ -105,9 +127,7 @@ int main(int argc, char **argv){
 		exit(1);
 	}
 
-	const int order = 2;
-    
-    //get lm
+	//get lm
     Vocab voc;  Ngram lm(voc, order);
     File lmfile(argv[3], "r");  lm.read(lmfile);  lmfile.close();
 
@@ -117,8 +137,14 @@ int main(int argc, char **argv){
     //parse file_in
     File infile(argv[1], "r"), outfile(argv[4], "w");
 	for(int i=0;i<5;++i){
-		String str(infile, true);
-		str.print();
+		String s(infile, true);
+		s.print();
+        
+        if(i == 4){
+            String a(s.str[0]), b(s.str[1]);
+            printf("log Prob(");  b.print("|");
+            a.print(")");  printf(" = %f\n", getLogProb(b.str[0], a, voc, lm));    
+        }
     }
 	infile.close();  outfile.close();
 	exit(0);
