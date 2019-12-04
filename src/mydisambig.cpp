@@ -14,10 +14,11 @@
 struct Word{
     char w[6];
     
-    Word(const char *s){ strcat(w, s);}
+    Word(){};
+    Word(const char *s){ strcpy(w, s);}
     void print() const{ printf("%s", w);}
-    bool operator < (const Word &other) const{
-        return (strcmp(w, other.w) < 0)
+    static int compare(const Word &w1, const Word &w2){
+        return strcmp(w1.w, w2.w);
     }
 };
 
@@ -25,29 +26,36 @@ struct String{
     Vector<Word> str;
     
     String(){};
-    String(const Word &a){ str(a.str);}
-    String(const Word &a, const Word &b){
+    String(const Word &a){ str(a);}
+    String(const String &a, const String &b){
         str.insert(str.end(), a.str.begin(), a.str.end());
         str.insert(str.end(), b.str.begin(), b.str.end());
     }
-    String (File &file, const bool add=false){
-        char *buf;  buf = file.getline();  Word tmp;
+    String(File &file, const bool add=false){
+        char *buf;  buf = file.getline();
         if(add) str.push_back(Word("<s>"));
-        while(sscanf(buf, "%s", tmp.w) > 0) str.push_back(tmp);
+        
+        Word tmp;  int res;
+        while((res = sscanf(buf, "%s", tmp.w)) > 0){
+            buf = &buf[res];
+            str.push_back(tmp);
+        }
         if(add) str.push_back(Word("</s>"));
     }
     
     void print(const char *end) const{
-        for(int i=0;i<str.size();++i) printf("%s", str[i]);
+        for(int i=0;i<str.size();++i) str[i].print();
         printf("%s", end);
     }
-    bool operator < (const String &other) const{
-        unsigned int minlen = (str.size() < other.str.size())? str.size() : other.str.size();
-        for(int i=0;i<minlen;++i){
-            if(str[i] < other.str[i]) return true;
-            else if(str[i] > other.str[i]) return false;
+    static int compare(const String &s1, const String &s2){
+        unsigned int minlen = (s1.str.size() < s2.str.size())? s1.str.size() : s2.str.size();
+        for(unsigned int i=0;i<minlen;++i){
+            int res = Word::compare(s1.str[i] < s2.str[i]);
+            if(res != 0) return res;
         }
-        return ((minlen == str.size()) & (minlen < other.str.size())) true :false;
+        if(minlen == s1.str.size())
+            return (minlen == s2.str.siz())? 0 : -1;
+        else return 1;
     }
 }
 int main(int argc, char **argv){
@@ -63,7 +71,7 @@ int main(int argc, char **argv){
     File textfile(argv[1], "r");
 	
 	for(int i=0;i<5;++i){
-		MyString str(&textfile, true);
+		MyString str(textfile, true);
 		str.print();
     }
 	
