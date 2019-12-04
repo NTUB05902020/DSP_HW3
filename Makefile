@@ -1,7 +1,7 @@
-SRIPATH ?= /root/srilm-1.5.10
-MACHINE_TYPE ?= i686-m64
-INC_PATH ?= inc
-SRC_PATH ?= src
+SRIPATH = /root/srilm-1.5.10
+MACHINE_TYPE = i686-m64
+INC_PATH = inc
+SRC_PATH = src
 
 CXX = g++
 CXXFLAGS = -O2 -I$(SRIPATH)/include -I$(INC_PATH)
@@ -12,8 +12,8 @@ vpath %.cpp $(SRC_PATH)
 TARGET = mydisambig
 SRC = mydisambig.cpp
 OBJ = $(SRC:.cpp=.o)
-FROM ?= Big5-ZhuYin.map
-TO ?= ZhuYin-Big5.map
+FROM = Big5-ZhuYin.map
+TO = ZhuYin-Big5.map
 .PHONY: all clean map
 
 $(TARGET): $(OBJ) -loolm -ldstruct -lmisc
@@ -25,8 +25,7 @@ $(TARGET): $(OBJ) -loolm -ldstruct -lmisc
 all: $(TARGET)
 
 map:
-	@#TODO
-	@#python3 mapping.py $(FROM) $(TO)
+	python3 mapping.py $(FROM) $(TO)
 
 clean:
 	$(RM) $(OBJ) $(TARGET)
