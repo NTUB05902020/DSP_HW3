@@ -120,6 +120,6 @@ int main(int argc, char **argv){
 		String str(infile, true);
 		str.print();
     }
-	textfile.close();  outfile.close();
+	infile.close();  outfile.close();
 	exit(0);
 }
