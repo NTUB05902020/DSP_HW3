@@ -95,8 +95,9 @@ void getMap(const char *map_path, const int map_order){
 		vector<String> vec(line.str.begin()+1, line.str.end());
 		ZhuYin_Big5_map.insert(std::pair<Word,std::vector<String>>(line.str[0], vec));
 	}
-	printf("map count = %d\n", cnt);
 }
+
+//float getLogProb(const String &s, 
 
 int main(int argc, char **argv){
 	if(argc != 5){
@@ -105,17 +106,20 @@ int main(int argc, char **argv){
 	}
 
 	const int order = 2;
+    
+    //get lm
+    Vocab voc;  Ngram lm(voc, order);
+    File lmfile(argv[3]);  lm.read(lmfile);  lmfile.close();
 
+    //get map
 	getMap(argv[2], order);
     
-    File textfile(argv[1], "r");
-	
+    //parse file_in
+    File infile(argv[1], "r"), outfile(argv[4], "w");
 	for(int i=0;i<5;++i){
-		String str(textfile, true);
+		String str(infile, true);
 		str.print();
     }
-	
-	textfile.close();
-
+	textfile.close();  outfile.close();
 	exit(0);
 }
