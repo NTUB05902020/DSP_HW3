@@ -109,7 +109,7 @@ int main(int argc, char **argv){
     
     //get lm
     Vocab voc;  Ngram lm(voc, order);
-    File lmfile(argv[3]);  lm.read(lmfile);  lmfile.close();
+    File lmfile(argv[3], "r");  lm.read(lmfile);  lmfile.close();
 
     //get map
 	getMap(argv[2], order);
