@@ -60,24 +60,9 @@ struct String{
         for(int i=0;i<str.size();++i) str[i].print();
         printf("%s", end);
     }
-    /*static int compare(const String &s1, const String &s2){
-        unsigned int minlen = (s1.str.size() < s2.str.size())? s1.str.size() : s2.str.size();
-        for(unsigned int i=0;i<minlen;++i){
-            int res = Word::compare(s1.str[i], s2.str[i]);
-            if(res != 0) return res;
-        }
-        if(minlen == s1.str.size())
-            return (minlen == s2.str.size())? 0 : -1;
-        else return 1;
-    }*/
 };
 
 namespace std{
-	/*template<> struct less<String>{
-		bool operator() (const String &l, const String &r) const{
-			return (String::compare(l, r) < 0);
-		}
-	};*/
 	template<> struct less<Word>{
 		bool operator() (const Word &l, const Word &r) const{
 			return (Word::compare(l, r) < 0);
