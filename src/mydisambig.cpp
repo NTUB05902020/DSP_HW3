@@ -74,24 +74,12 @@ std::map<Word, std::vector<Word>> ZhuYin_Big5_map;
 
 void getMap(const char *map_path, const int map_order){
 	File mapfile(map_path, "r");
-	int cnt = 0;
 	while(1){
 		String line(mapfile);
 		if(line.str.empty()) break;
-		++cnt;
 		vector<Word> vec(line.str.begin()+1, line.str.end());
 		ZhuYin_Big5_map.insert(std::pair<Word,std::vector<Word>>(line.str[0], vec));
 	}
-    printf("map length = %d\n", cnt);
-    auto it = ZhuYin_Big5_map.begin();
-    for(int i=0;i<5;++i,++it){
-        it->first.print();  printf(":  ");
-        printf("%u\n", it->second.size());
-        for(int j=0;j<10;++j){
-            it->second[j].print();  printf(" ");
-        }
-        printf("\n");
-    }
 }
 
 VocabIndex myGetIndex(const Word &word, Vocab &voc){
