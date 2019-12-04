@@ -125,7 +125,7 @@ String viterbi(const String &s, Vocab &voc, Ngram &lm){
                 if(newLogProb > max){ max = newLogProb; max_index = j;}
             }
             String maxstr(vecs[v_][max_index].first, candidate);
-            vecs[v].push_back(std::pair<String,float>(maxstr, newLogProb));
+            vecs[v].push_back(std::pair<String,float>(maxstr, max));
         }
     }
     
