@@ -64,11 +64,13 @@ struct String{
 	}
     
     void print(const char *end="\n") const{
-        for(int i=0;i<str.size();++i) str[i].print();
+		str[0].print();
+        for(int i=1;i<str.size();++i){ printf(" "); str[i].print();}
         printf("%s", end);
     }
 	void print(FILE *fp, const char *end="\n") const{
-		for(int i=0;i<str.size();++i) str[i].print(fp);
+		str[0].print(fp);
+		for(int i=1;i<str.size();++i){ fprintf(fp, " "); str[i].print(fp);}
 		fprintf(fp, "%s", end);
 	}
 };
